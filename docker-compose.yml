@@ -1,0 +1,71 @@
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: pharmacy-postgres
+    environment:
+      POSTGRES_DB: pharmacymanagement
+      POSTGRES_USER: celse
+      POSTGRES_PASSWORD: 123456
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    networks:
+      - pharmacy-network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U celse -d pharmacymanagement" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # Spring Boot Backend
+  backend:
+    build:
+      context: ./pharmacy-management
+      dockerfile: Dockerfile
+    container_name: pharmacy-backend
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/pharmacymanagement
+      SPRING_DATASOURCE_USERNAME: celse
+      SPRING_DATASOURCE_PASSWORD: 123456
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SERVER_PORT: 8082
+    ports:
+      - "8082:8082"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - pharmacy-network
+    healthcheck:
+      test: [ "CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8082/actuator/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    restart: unless-stopped
+
+  # React Frontend
+  frontend:
+    build:
+      context: ./pharmacy_frontend
+      dockerfile: Dockerfile
+    container_name: pharmacy-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - pharmacy-network
+    restart: unless-stopped
+
+networks:
+  pharmacy-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
