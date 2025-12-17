@@ -1,0 +1,13 @@
+@import "tailwindcss";
+
+*{
+  font-family: "Satoshi", sans-serif;
+}
+
+body {
+  background-color: #f3f4f6;
+}
+
+.ri {
+  color: white;
+}
