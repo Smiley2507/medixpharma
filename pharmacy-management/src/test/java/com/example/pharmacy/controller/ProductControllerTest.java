@@ -3,16 +3,19 @@ package com.example.pharmacy.controller;
 import com.example.pharmacy.dto.ProductDTO;
 import com.example.pharmacy.entity.Product;
 import com.example.pharmacy.service.ProductService;
+import com.example.pharmacy.service.UserDetailsServiceImpl;
+import com.example.pharmacy.security.JwtUtils;
+import com.example.pharmacy.security.AuthEntryPointJwt;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -20,17 +23,17 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import com.example.pharmacy.repository.RoleRepository;
 
 /**
  * Integration tests for ProductController
  * Tests REST API endpoints for product management
  */
-@SpringBootTest
-@AutoConfigureMockMvc
+@WebMvcTest(ProductController.class)
 class ProductControllerTest {
 
     @Autowired
@@ -38,6 +41,18 @@ class ProductControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @MockBean
+    private UserDetailsServiceImpl userDetailsService;
+
+    @MockBean
+    private JwtUtils jwtUtils;
+
+    @MockBean
+    private AuthEntryPointJwt unauthorizedHandler;
+
+    @MockBean
+    private RoleRepository roleRepository;
 
     @MockBean
     private ProductService productService;
@@ -48,19 +63,17 @@ class ProductControllerTest {
     @BeforeEach
     void setUp() {
         testProductDTO = new ProductDTO();
-        testProductDTO.setId(1L);
+        testProductDTO.setProductId(1L);
         testProductDTO.setName("Test Medicine");
-        testProductDTO.setDescription("Test Description");
+        testProductDTO.setGenericName("Generic Medicine");
         testProductDTO.setPrice(new BigDecimal("99.99"));
-        testProductDTO.setCategory("Antibiotics");
         testProductDTO.setSupplierId(1L);
 
         testProduct = new Product();
-        testProduct.setId(1L);
+        testProduct.setProductId(1L);
         testProduct.setName("Test Medicine");
-        testProduct.setDescription("Test Description");
+        testProduct.setGenericName("Generic Medicine");
         testProduct.setPrice(new BigDecimal("99.99"));
-        testProduct.setCategory("Antibiotics");
     }
 
     @Test
@@ -112,9 +125,10 @@ class ProductControllerTest {
 
         // Act & Assert
         mockMvc.perform(post("/api/products")
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(testProductDTO)))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name").value("Test Medicine"))
                 .andExpect(jsonPath("$.price").value(99.99));
     }
@@ -123,12 +137,18 @@ class ProductControllerTest {
     @WithMockUser(username = "admin", roles = { "ADMIN" })
     void testUpdateProduct_Success() throws Exception {
         // Arrange
+        ProductController.ProductUpdateRequest updateRequest = new ProductController.ProductUpdateRequest();
+        updateRequest.setName("Test Medicine");
+        updateRequest.setPrice(new BigDecimal("99.99"));
+        updateRequest.setSupplierId(1L);
+
         when(productService.updateProduct(any(Product.class))).thenReturn(testProduct);
 
         // Act & Assert
         mockMvc.perform(put("/api/products/1")
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(testProduct)))
+                .content(objectMapper.writeValueAsString(updateRequest)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Test Medicine"));
     }
@@ -138,6 +158,7 @@ class ProductControllerTest {
     void testDeleteProduct_Success() throws Exception {
         // Act & Assert
         mockMvc.perform(delete("/api/products/1")
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
     }

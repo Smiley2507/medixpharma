@@ -33,6 +33,9 @@ services:
       SPRING_DATASOURCE_PASSWORD: 123456
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
       SERVER_PORT: 8082
+      SPRING_MAIL_USERNAME: ${SPRING_MAIL_USERNAME:-mizeromahirecelse@gmail.com}
+      SPRING_MAIL_PASSWORD: ${SPRING_MAIL_PASSWORD:-ehxvtnhvfnenrdft}
+      JWT_SECRET: ${JWT_SECRET:-pharmacySecretKey123456789012345678901234567890}
     ports:
       - "8082:8082"
     depends_on:

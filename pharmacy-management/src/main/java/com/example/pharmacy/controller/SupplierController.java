@@ -21,14 +21,12 @@ public class SupplierController {
     public ResponseEntity<?> getAllSuppliers() {
         try {
             List<SupplierDTO> suppliers = supplierService.getAllSuppliers();
-            if (suppliers == null || suppliers.isEmpty()) {
-                return ResponseEntity.status(404).body(Map.of("error", "No suppliers found"));
-            }
             return ResponseEntity.ok(suppliers);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(Map.of("error", "Error fetching suppliers: " + e.getMessage()));
+            return ResponseEntity.internalServerError()
+                    .body(Map.of("error", "Error fetching suppliers: " + e.getMessage()));
         }
     }
 
@@ -40,7 +38,8 @@ public class SupplierController {
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(Map.of("error", "Error creating supplier: " + e.getMessage()));
+            return ResponseEntity.internalServerError()
+                    .body(Map.of("error", "Error creating supplier: " + e.getMessage()));
         }
     }
 
@@ -52,7 +51,8 @@ public class SupplierController {
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(Map.of("error", "Error fetching supplier: " + e.getMessage()));
+            return ResponseEntity.internalServerError()
+                    .body(Map.of("error", "Error fetching supplier: " + e.getMessage()));
         }
     }
 
@@ -64,7 +64,8 @@ public class SupplierController {
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(Map.of("error", "Error updating supplier: " + e.getMessage()));
+            return ResponseEntity.internalServerError()
+                    .body(Map.of("error", "Error updating supplier: " + e.getMessage()));
         }
     }
 
@@ -76,7 +77,8 @@ public class SupplierController {
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(Map.of("error", "Error deleting supplier: " + e.getMessage()));
+            return ResponseEntity.internalServerError()
+                    .body(Map.of("error", "Error deleting supplier: " + e.getMessage()));
         }
     }
 }

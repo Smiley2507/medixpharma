@@ -50,7 +50,10 @@ class JwtUtilsTest {
                 "testuser",
                 "test@example.com",
                 "password",
-                authorities);
+                authorities,
+                "Test User",
+                "1234567890",
+                true);
     }
 
     @Test
@@ -77,7 +80,7 @@ class JwtUtilsTest {
         String username = jwtUtils.getUserNameFromJwtToken(token);
 
         // Assert
-        assertEquals("testuser", username);
+        assertEquals("test@example.com", username);
     }
 
     @Test

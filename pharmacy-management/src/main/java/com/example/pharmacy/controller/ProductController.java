@@ -16,7 +16,7 @@ import com.example.pharmacy.dto.ProductDTO;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @RestController
-@RequestMapping("api/products")
+@RequestMapping("/api/products")
 public class ProductController {
     private final ProductService productService;
 
@@ -29,15 +29,12 @@ public class ProductController {
     public ResponseEntity<?> getAllProducts() {
         try {
             List<ProductDTO> products = productService.getAllProducts();
-            if (products == null || products.isEmpty()) {
-                return new ResponseEntity<>(Map.of("error", "No products found"), HttpStatus.NOT_FOUND);
-            }
             return new ResponseEntity<>(products, HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<>(Map.of("error", e.getMessage()), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             return new ResponseEntity<>(Map.of("error", "Failed to fetch products: " + e.getMessage()),
-                HttpStatus.INTERNAL_SERVER_ERROR);
+                    HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -74,7 +71,8 @@ public class ProductController {
                 return new ResponseEntity<>(Map.of("error", "Product name is required"), HttpStatus.BAD_REQUEST);
             }
             if (productDTO.getPrice() == null || productDTO.getPrice().compareTo(BigDecimal.ZERO) <= 0) {
-                return new ResponseEntity<>(Map.of("error", "Product price must be greater than 0"), HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(Map.of("error", "Product price must be greater than 0"),
+                        HttpStatus.BAD_REQUEST);
             }
             if (productDTO.getSupplierId() == null) {
                 return new ResponseEntity<>(Map.of("error", "Supplier ID is required"), HttpStatus.BAD_REQUEST);
@@ -88,7 +86,7 @@ public class ProductController {
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(Map.of("error", "An unexpected error occurred: " + e.getMessage()),
-                HttpStatus.INTERNAL_SERVER_ERROR);
+                    HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -116,7 +114,7 @@ public class ProductController {
             return new ResponseEntity<>(Map.of("error", e.getMessage()), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             return new ResponseEntity<>(Map.of("error", "Failed to update product: " + e.getMessage()),
-                HttpStatus.INTERNAL_SERVER_ERROR);
+                    HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -140,22 +138,52 @@ public class ProductController {
         @JsonProperty("supplierId")
         private Long supplierId;
 
-        public String getName() { return name; }
-        public void setName(String name) { this.name = name; }
+        public String getName() {
+            return name;
+        }
 
-        public String getGenericName() { return genericName; }
-        public void setGenericName(String genericName) { this.genericName = genericName; }
+        public void setName(String name) {
+            this.name = name;
+        }
 
-        public String getManufacturer() { return manufacturer; }
-        public void setManufacturer(String manufacturer) { this.manufacturer = manufacturer; }
+        public String getGenericName() {
+            return genericName;
+        }
 
-        public String getDosage() { return dosage; }
-        public void setDosage(String dosage) { this.dosage = dosage; }
+        public void setGenericName(String genericName) {
+            this.genericName = genericName;
+        }
 
-        public BigDecimal getPrice() { return price; }
-        public void setPrice(BigDecimal price) { this.price = price; }
+        public String getManufacturer() {
+            return manufacturer;
+        }
 
-        public Long getSupplierId() { return supplierId; }
-        public void setSupplierId(Long supplierId) { this.supplierId = supplierId; }
+        public void setManufacturer(String manufacturer) {
+            this.manufacturer = manufacturer;
+        }
+
+        public String getDosage() {
+            return dosage;
+        }
+
+        public void setDosage(String dosage) {
+            this.dosage = dosage;
+        }
+
+        public BigDecimal getPrice() {
+            return price;
+        }
+
+        public void setPrice(BigDecimal price) {
+            this.price = price;
+        }
+
+        public Long getSupplierId() {
+            return supplierId;
+        }
+
+        public void setSupplierId(Long supplierId) {
+            this.supplierId = supplierId;
+        }
     }
 }

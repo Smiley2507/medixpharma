@@ -46,24 +46,22 @@ class ProductServiceTest {
     void setUp() {
         // Initialize test data
         testSupplier = new Supplier();
-        testSupplier.setId(1L);
+        testSupplier.setSupplierId(1L);
         testSupplier.setName("Test Supplier");
         testSupplier.setEmail("supplier@test.com");
 
         testProduct = new Product();
-        testProduct.setId(1L);
+        testProduct.setProductId(1L);
         testProduct.setName("Test Medicine");
-        testProduct.setDescription("Test Description");
+        testProduct.setGenericName("Generic Medicine");
         testProduct.setPrice(new BigDecimal("99.99"));
-        testProduct.setCategory("Antibiotics");
         testProduct.setSupplier(testSupplier);
 
         testProductDTO = new ProductDTO();
-        testProductDTO.setId(1L);
+        testProductDTO.setProductId(1L);
         testProductDTO.setName("Test Medicine");
-        testProductDTO.setDescription("Test Description");
+        testProductDTO.setGenericName("Generic Medicine");
         testProductDTO.setPrice(new BigDecimal("99.99"));
-        testProductDTO.setCategory("Antibiotics");
         testProductDTO.setSupplierId(1L);
     }
 
@@ -143,7 +141,7 @@ class ProductServiceTest {
     void testSearchProducts_Success() {
         // Arrange
         List<Product> products = Arrays.asList(testProduct);
-        when(productRepository.findByNameContainingIgnoreCase("Test"))
+        when(productRepository.findByNameContaining("Test"))
                 .thenReturn(products);
 
         // Act
@@ -153,7 +151,7 @@ class ProductServiceTest {
         assertNotNull(result);
         assertEquals(1, result.size());
         assertEquals("Test Medicine", result.get(0).getName());
-        verify(productRepository, times(1)).findByNameContainingIgnoreCase("Test");
+        verify(productRepository, times(1)).findByNameContaining("Test");
     }
 
     @Test
@@ -188,7 +186,7 @@ class ProductServiceTest {
         // Assert
         assertNotNull(result);
         assertEquals(1, result.size());
-        assertEquals(testSupplier.getId(), result.get(0).getSupplier().getId());
+        assertEquals(testSupplier.getSupplierId(), result.get(0).getSupplier().getSupplierId());
         verify(productRepository, times(1)).findBySupplier(testSupplier);
     }
 }

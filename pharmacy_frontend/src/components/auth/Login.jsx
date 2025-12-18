@@ -68,7 +68,7 @@ const Login = () => {
         {/* Left Side with Image and Tint */}
         <div className="relative w-1/2 hidden md:block">
           <img
-            src="/src/assets/pharma2.jpg"
+            src="/pharma2.jpg"
             alt="Pharmacy"
             className="w-full h-full object-cover"
           />
